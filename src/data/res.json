@@ -1,0 +1,86 @@
+{
+    "data": [
+        {
+            "restaurantName": "Bronco",
+            "index":1,
+            "address": "39 Rue des Petites Écuries, 75010 Paris",
+            "lat": 48.8737815,
+            "long": 2.3501649,
+            "ratings": [
+                {
+                    "stars": 4,
+                    "comment": "Great! But not many veggie options."
+                },
+                {
+                    "stars": 5,
+                    "comment": "My favorite restaurant!"
+                }
+            ]
+        },
+        {
+            "restaurantName": "Bronco",
+            "index":2,
+            "address": "39 Rue des Petites Écuries, 75010 Paris",
+            "lat": 48.8737815,
+            "long": 2.3501649,
+            "ratings": [
+                {
+                    "stars": 4,
+                    "comment": "Great! But not many veggie options."
+                },
+                {
+                    "stars": 5,
+                    "comment": "My favorite restaurant!"
+                }
+            ]
+        }, {
+            "restaurantName": "Bronco",
+            "index":3,
+            "address": "39 Rue des Petites Écuries, 75010 Paris",
+            "lat": 48.8737815,
+            "long": 2.3501649,
+            "ratings": [
+                {
+                    "stars": 4,
+                    "comment": "Great! But not many veggie options."
+                },
+                {
+                    "stars": 5,
+                    "comment": "My favorite restaurant!"
+                }
+            ]
+        }, {
+            "restaurantName": "Bronco",
+            "index":4,
+            "address": "39 Rue des Petites Écuries, 75010 Paris",
+            "lat": 48.8737815,
+            "long": 2.3501649,
+            "ratings": [
+                {
+                    "stars": 4,
+                    "comment": "Great! But not many veggie options."
+                },
+                {
+                    "stars": 5,
+                    "comment": "My favorite restaurant!"
+                }
+            ]
+        }, {
+            "restaurantName": "Bronco",
+            "index":5,
+            "address": "39 Rue des Petites Écuries, 75010 Paris",
+            "lat": 48.8737815,
+            "long": 2.3501649,
+            "ratings": [
+                {
+                    "stars": 4,
+                    "comment": "Great! But not many veggie options."
+                },
+                {
+                    "stars": 5,
+                    "comment": "My favorite restaurant!"
+                }
+            ]
+        }
+    ]
+}
