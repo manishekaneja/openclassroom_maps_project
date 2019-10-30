@@ -32,7 +32,27 @@ background-color:#333;
 `;
 
 
+const AlertMessage = styled.div`
+position:fixed;
+z-index:100;
+display:flex;
+justify-content:center;
+align-items:center;
+top:0px;
+width:100%;
+padding:10px;
+left:0px;
+transition:0.5s;
+opacity:${props => props.open ? '1' : '0'};
+span{
+    padding:10px 20px;
+    background-color:${props => props.type === 'danger' ? 'red' : props.type === 'success' ? 'green' : '#444'};
+    color:white;
+    font-weight:700;
+    font-famaily:monospace;
+    border-radius:40px;
+}
+`
 
-
-export { FlexCenter, Container, DarkContainer, Button, DarkButton };
+export { FlexCenter, Container, DarkContainer, Button, DarkButton, AlertMessage };
 

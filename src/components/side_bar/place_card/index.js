@@ -29,7 +29,7 @@ display: inline-block;
     flex-direction: column;
     padding: 2px 4px;
 `;
-export default function PlaceCard({ element, showRating, toggleRating, addRating }) {
+export default function PlaceCard({ element, showRating, toggleRating, showAlert, addRating }) {
     const [showRatingPopup, toggleRatingPopup] = useState(false);
     return <>
         <PlaceCardConatiner >
@@ -59,6 +59,7 @@ export default function PlaceCard({ element, showRating, toggleRating, addRating
         <AddRating show={showRatingPopup} onAddClick={(message, stars) => {
             addRating(message, stars, element.index);
             toggleRatingPopup(false);
+            showAlert("Thank You Giving Feedback")
         }} onCloseClick={() => toggleRatingPopup(false)} />
     </>
 }
