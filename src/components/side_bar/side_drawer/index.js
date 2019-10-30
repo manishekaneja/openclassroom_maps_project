@@ -7,7 +7,7 @@ import PlaceCard from '../place_card';
 const Drawer = styled(Container)`
     height: 100vh;
     background-color: #ccc;
-    z-index: 3;
+    z-index: 101;
     left:0;
     transition: 0.5s;
     display:flex;
@@ -19,10 +19,10 @@ const Drawer = styled(Container)`
 `;
 
 function useHookForSearch(locations) {
-    let [locationsArray, updateLocations] = useState(locations)
+    let [locationsArray, updateLocations] = useState(locations);
     let [phrase, updatePhrase] = useState('');
     useEffect(function () {
-        updateLocations(locations => locations.filter(function (loc) {
+        updateLocations(locations.filter(function (loc) {
             if (phrase.toString().trim().length === 0) {
                 return false;
             }
@@ -34,18 +34,21 @@ function useHookForSearch(locations) {
     return { locationsArray, phrase, updatePhrase };
 }
 
-export function SideDrawer({ show, closeMenu, locations, addRating, markPlace, updateCenter }) {
+export function SideDrawer({ show, closeMenu, locations, showAlert, hideAlert, addRating, markPlace, noMarker, updateCenter }) {
     const { locationsArray, phrase, updatePhrase } = useHookForSearch(locations);
     const [showRating, toggleRating] = useState(0);
     return <Drawer style={{ width: (!show) ? '0px' : '400px' }} className="hide" >
         <DrawerHeader closeMenu={closeMenu} phrase={phrase} updatePhrase={updatePhrase} />
         <div style={{ padding: '20px 10px', flex: 1, overflowY: 'scroll' }}>
-            {locationsArray.map((element, index) => <PlaceCard addRating={addRating} key={index} showRating={showRating === index} toggleRating={() => {
-                toggleRating(selected => index === selected ? -1 : index);
+            {locationsArray.map((element, index) => <PlaceCard addRating={addRating} key={index} showAlert={showAlert} showRating={showRating === index} toggleRating={() => {
+                noMarker();
                 markPlace(element.index);
-                console.log(element)
+                toggleRating(selected => index === selected ? -1 : index);
             }} element={element} />)}
         </div>
-        <DrawerFooter updateCenter={updateCenter} />
+        <DrawerFooter updateCenter={() => {
+            updateCenter();
+            showAlert("Back to Center", "success");
+        }} />
     </Drawer>
 }

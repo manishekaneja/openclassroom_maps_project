@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 import HomeIcon from '../../assets/marker_icons/icon.png';
 import RestroIcon from '../../assets/marker_icons/restro.jpeg';
+import NewLocationIcon from '../../assets/marker_icons/new_place.png';
 
 import * as apiKey from '../../utils/api_key.json';
 import { Container } from '../styled_components/index.js';
@@ -21,33 +22,18 @@ function useCurrentLocation(loaded) {
     }, [loaded]);
     return location;
 }
-function CustomMap({ loaded, addLocation, homeMarker, google, locations, updateCenter, center }) {
+function CustomMap({ loaded, addLocation, homeMarker, google, newLocations, locations, updateCenter, center }) {
     let { latitude, longitude } = useCurrentLocation(loaded);
     const [bounds, updateBounds] = useState(false);
-    console.log(locations, locations.filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
-        bounds.getSouthWest().lat() >= e.latitude ||
-        bounds.getNorthEast().lng() <= e.longitude ||
-        bounds.getSouthWest().lng() >= e.longitude))))
-    // useEffect(() => {
-    //     console.log(google, loaded)
-    //     if (loaded) {
-    //         console.log({ g: google.map.Map.getBounds() })
-    //     }
-    // }, [locations, loaded])
     const Base = (!!homeMarker ? homeMarker : Marker);
     return (
         <Map google={google}
-            onReady={(mapProps, map) => {
-                console.log("up");
-                // updateBounds(map.getBounds());
+            onTilesloaded={(mapProps, map) => {
+                updateBounds(map.getBounds());
             }}
             onDragend={(mapProps, map) => {
                 updateCenter({ latitude: map.getCenter().lat(), longitude: map.getCenter().lng() })
                 updateBounds(map.getBounds());
-                console.log(locations.filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
-                    bounds.getSouthWest().lat() >= e.latitude ||
-                    bounds.getNorthEast().lng() <= e.longitude ||
-                    bounds.getSouthWest().lng() >= e.longitude))))
             }}
             center={center ? {
                 lat: center.latitude,
@@ -69,6 +55,13 @@ function CustomMap({ loaded, addLocation, homeMarker, google, locations, updateC
                 bounds.getSouthWest().lng() >= e.longitude))).map(function (element, index) {
                     return <RestroMarker key={index} position={{ lat: element.latitude, lng: element.longitude }} />
                 })}
+
+            {newLocations.filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
+                bounds.getSouthWest().lat() >= e.latitude ||
+                bounds.getNorthEast().lng() <= e.longitude ||
+                bounds.getSouthWest().lng() >= e.longitude))).map(function (element, index) {
+                    return <NewLocationMarker key={index} position={{ lat: element.latitude, lng: element.longitude }} />
+                })}
         </Map>
     );
 }
@@ -77,6 +70,9 @@ export function HomeMarker(props) {
 }
 export function RestroMarker(props) {
     return <CustomMarker {...props} icon={{ url: RestroIcon, dim: [35, 35] }} />
+}
+export function NewLocationMarker(props) {
+    return <CustomMarker {...props} icon={{ url: NewLocationIcon, dim: [35, 35] }} />
 }
 
 
