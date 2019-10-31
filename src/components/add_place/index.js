@@ -86,7 +86,7 @@ const styles = {
         width: 320,
         backgroundColor: 'rgba(255, 228, 196,1)',
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 2,
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column'
