@@ -17,7 +17,7 @@ const Footer = styled(Container)`
 export function DrawerFooter({updateCenter}) {
     // const [state, updateState] = useState(false);
     return <Footer className="footer" style={{
-        display: 'flex', justifyContent: "space-around", alignItems: "center"
+        display: 'flex', alignItems: "center"
     }} >
         <Button style={{ fontSize: 24 }} onClick={()=>{
             updateCenter()
