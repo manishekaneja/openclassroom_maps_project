@@ -7,6 +7,7 @@ import NewLocationIcon from '../../assets/marker_icons/new_place.png';
 import * as apiKey from '../../utils/api_key.json';
 import { Container } from '../styled_components/index.js';
 import { CustomMarker } from './custom_marker';
+import { formatResultArray } from '../../App';
 
 function useCurrentLocation(loaded) {
     const [location, updateLocation] = useState({ latitude: 0, longitude: 0 });
@@ -22,14 +23,35 @@ function useCurrentLocation(loaded) {
     }, [loaded]);
     return location;
 }
-function CustomMap({ loaded, addLocation, homeMarker, google, newLocations, locations, updateCenter, center }) {
+function CustomMap({ setLocations,bounds, updateBounds, loaded, addLocation, homeMarker, google, newLocations, locations, updateCenter, center }) {
     let { latitude, longitude } = useCurrentLocation(loaded);
-    const [bounds, updateBounds] = useState(false);
+    const [fetchPlaces, updatePlaces] = useState([])
     const Base = (!!homeMarker ? homeMarker : Marker);
+    const [service, updateService] = useState(null);
+    useEffect(function () {
+        if (service) {
+            service.nearbySearch({
+                location: { lat: latitude, lng: longitude },
+                radius: '500',
+                type: 'restaurant'
+            }, function (results, status) {
+                console.log({ results, status })
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    formatResultArray(results)
+                    setLocations(formatResultArray(results));
+                }
+            });
+        }
+    }, [latitude, longitude, service]);
     return (
         <Map google={google}
             onTilesloaded={(mapProps, map) => {
                 updateBounds(map.getBounds());
+            }}
+            onReady={(mapProps, map) => {
+                const { google } = mapProps;
+                const service = new google.maps.places.PlacesService(map);
+                updateService(service);
             }}
             onDragend={(mapProps, map) => {
                 updateCenter({ latitude: map.getCenter().lat(), longitude: map.getCenter().lng() })
@@ -49,6 +71,10 @@ function CustomMap({ loaded, addLocation, homeMarker, google, newLocations, loca
                 })
             }}>
             <Base position={{ lat: latitude, lng: longitude }} />
+            {/* {fetchPlaces.map((place, index) => {
+                console.log(place)
+                return <CustomMarker key={index} position={place.geometry.location} />
+            })} */}
             {locations.filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
                 bounds.getSouthWest().lat() >= e.latitude ||
                 bounds.getNorthEast().lng() <= e.longitude ||

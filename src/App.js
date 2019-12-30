@@ -4,12 +4,39 @@ import './App.css';
 import CustomMap, { HomeMarker } from './components/map';
 import SideBarButton from './components/side_bar/side_bar_button';
 import { SideDrawer } from './components/side_bar/side_drawer';
-import data from './api/ajax_request';
 
 import { FlexCenter, AlertMessage } from './components/styled_components';
 import { AddPlace } from './components/add_place';
+
+/*
+Utility Function to restructure Array
+*/
+export function formatResultArray(result_array) {
+  return result_array.map((element, index) => {
+    return {
+      index: index,
+      name: element.name,
+      address: element.vicinity,
+      ratings: [{
+        index: 1,
+        comment: "People rated this place as",
+        stars: element.rating ? element.rating > 5 ? 5 : Math.round(element.rating) : 0
+      }],
+      latitude: element.geometry.location.lat(),
+      longitude: element.geometry.location.lng(),
+      isShow: false,
+      isNew: false,
+    }
+  });
+}
+
+
+/*
+Custom Hook to track locations
+*/
+
 function useCustomHook() {
-  const [locations, setLocations] = useState([...data.default.data]);
+  const [locations, setLocations] = useState([...formatResultArray([])]);
   const [menuFlag, updateMenuFlag] = useState(false);
   const [addLocationFlag, updateAddLocationFlag] = useState(false);
   const [tempLocation, updateTempLocation] = useState(null);
@@ -20,6 +47,7 @@ function useCustomHook() {
     menuFlag,
     addLocationFlag,
     center,
+    setLocations,
     openMenu() {
       updateMenuFlag(true);
       updateAddLocationFlag(false);
@@ -44,6 +72,11 @@ function useCustomHook() {
       }).length > 0) {
         return false;
       }
+      updateCenter(false);
+      setLocations(locations => locations.map(loc => ({
+        ...loc,
+        isShow: false
+      })));
       updateTempLocation(tempObj);
       updateAddLocationFlag(true);
       updateMenuFlag(false);
@@ -52,7 +85,7 @@ function useCustomHook() {
       setLocations(loc => {
         const newLocation = {
           ...tempLocation,
-          restaurantName: name, address,
+          name: name, address,
           index: loc.length,
           ratings: [],
           isShow: false,
@@ -70,6 +103,7 @@ function useCustomHook() {
       setLocations(locations => locations.map(loc => (loc.index === key) ? {
         ...loc,
         ratings: [...loc.ratings, {
+          "index":loc.ratings.length,
           "stars": stars,
           "comment": message
         }]
@@ -98,6 +132,9 @@ function useCustomHook() {
   };
 }
 
+/*
+Custom Hook for Showing Alert
+*/
 
 function useAlertState() {
   const [alertState, updateAlertValue] = useState(false);
@@ -137,10 +174,21 @@ function useAlertState() {
 }
 
 
+/*
+
+Main Component to Start the App
+
+
+
+*/
+
+
+
 function App() {
 
-  const { updateCenter, center, locations, menuFlag, addLocationFlag, openMenu, closeMenu, openAddScreen, closeAddScreen, addThisLocation, giveRating, markPlace, noMarker } = useCustomHook();
+  const { updateCenter, setLocations,center, locations, menuFlag, addLocationFlag, openMenu, closeMenu, openAddScreen, closeAddScreen, addThisLocation, giveRating, markPlace, noMarker } = useCustomHook();
   const { alertMessage, alertState, showAlert, hideAlert, alertType } = useAlertState();
+  const [bounds, updateBounds] = useState(false);
   useEffect(() => {
     showAlert("Ready To Start", "success");
   }, [])
@@ -153,7 +201,10 @@ function App() {
         hideAlert={hideAlert}
         noMarker={noMarker}
         updateCenter={updateCenter}
-        locations={locations}
+        locations={[...locations].filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
+          bounds.getSouthWest().lat() >= e.latitude ||
+          bounds.getNorthEast().lng() <= e.longitude ||
+          bounds.getSouthWest().lng() >= e.longitude)))}
         markPlace={markPlace}
         show={menuFlag}
         closeMenu={closeMenu}
@@ -161,10 +212,13 @@ function App() {
       />
       <CustomMap
         center={center}
+        setLocations={setLocations}
         updateCenter={updateCenter}
         homeMarker={HomeMarker}
         newLocations={locations.filter((loc) => !loc.isShow && loc.isNew)}
         locations={locations.filter((loc) => loc.isShow)}
+        bounds={bounds}
+        updateBounds={updateBounds}
         addLocation={openAddScreen} />
     </FlexCenter>
     <AlertMessage open={alertState} type={alertType} >

@@ -1,4 +1,4 @@
-import * as data from '../data/res.json'
+// import * as data from '../data/res.json'
 // const axios = require('axios');
 
 // const getJson = () => axios.get('./restro_searcho/src/data/res.json')
@@ -6,4 +6,4 @@ import * as data from '../data/res.json'
 //     .catch(err => console.log(err))
 //     .finally(_ => console.log("Done"));
 
-export default  data; 
+export default { results: {} }; 

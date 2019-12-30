@@ -38,7 +38,7 @@ export default function PlaceCard({ element, showRating, toggleRating, showAlert
                     <img style={{ width: '100%', height: '100%' }} src="https://images.pexels.com/photos/6267/menu-restaurant-vintage-table.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt={"Default Omage"} />
                 </PlaceCardImageContainer>
                 <PlaceCardDetails>
-                    <h3 style={{ fontSize: 20, margin: 0 }}>{element.restaurantName}</h3>
+                    <h3 style={{ fontSize: 20, margin: 0 }}>{element.name}</h3>
                     <div>
                         <p style={{ margin: 2, fontSize: 14 }}> Address: </p>
                         <p style={{ margin: 2, fontSize: 14 }}>{element.address}</p>

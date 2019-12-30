@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
+
+
+//Custom Marker
 export function CustomMarker(props) {
     let [initallLoad, updateLoadingState] = useState(true);
     const marker = useRef();
@@ -7,10 +10,10 @@ export function CustomMarker(props) {
     const preferences = {
         map: props.map,
         position: new props.google.maps.LatLng(position.lat, position.lng),
-        icon: (!!props.icon) ? {
+        icon: !!props.icon ? ((!!props.icon.url) ? {
             url: props.icon.url,
-            scaledSize: new props.google.maps.Size(props.icon.dim[0], props.icon.dim[1])
-        } : null,
+            ...(props.icon ? { scaledSize: new props.google.maps.Size(props.icon.dim[0], props.icon.dim[1]) } : {})
+        } : props.icon ): null,
         ...(initallLoad ? { animation: props.google.maps.Animation.DROP } : {})
     };
     useEffect(() => {
@@ -28,10 +31,9 @@ export function CustomMarker(props) {
                 setTimeout(_ => marker.current.setAnimation(null), 1500)
             }
         });
-
         return function () {
             marker.current.setMap(null);
         }
-    }, [marker,preferences,props.google]);
+    }, [marker, preferences, props.google]);
     return null;
 }

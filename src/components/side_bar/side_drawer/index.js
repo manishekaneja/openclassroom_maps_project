@@ -24,30 +24,35 @@ function useHookForSearch(locations) {
     useEffect(function () {
         updateLocations(locations.filter(function (loc) {
             if (phrase.toString().trim().length === 0) {
-                return false;
+                return true;
             }
-            return loc.restaurantName.toLowerCase().includes(phrase.toString().trim().toLowerCase()) ||
-                loc.address.toLowerCase().includes(phrase.toString().trim().toLowerCase());
-            ;
-        }))
+            return loc.name.toLowerCase().includes(phrase.toString().trim().toLowerCase()) ||
+                loc.address.toLowerCase().includes(phrase.toString().trim().toLowerCase())
+        }));
     }, [locations, phrase]);
     return { locationsArray, phrase, updatePhrase };
 }
 
 export function SideDrawer({ show, closeMenu, locations, showAlert, hideAlert, addRating, markPlace, noMarker, updateCenter }) {
-    const { locationsArray, phrase, updatePhrase } = useHookForSearch(locations);
+    const {locationsArray, phrase, updatePhrase } = useHookForSearch(locations);
+    console.log(">>",locations,locationsArray)
     const [showRating, toggleRating] = useState(0);
     return <Drawer style={{ width: (!show) ? '0px' : '400px' }} className="hide" >
         <DrawerHeader closeMenu={closeMenu} phrase={phrase} updatePhrase={updatePhrase} />
         <div style={{ padding: '20px 10px', flex: 1, overflowY: 'scroll' }}>
-            {locationsArray.map((element, index) => <PlaceCard addRating={addRating} key={index} showAlert={showAlert} showRating={showRating === index} toggleRating={() => {
-                noMarker();
-                markPlace(element.index);
-                toggleRating(selected => index === selected ? -1 : index);
-            }} element={element} />)}
+            {locationsArray.map((element, index) => {
+                console.log(element);
+                // return null;
+                return <PlaceCard addRating={addRating} updateCenter={updateCenter} key={index} showAlert={showAlert} showRating={showRating === index} toggleRating={() => {
+                    noMarker();
+                    markPlace(element.index);
+                    // updateCenter({ latitude: element.latitude, longitude: element.longitude })
+                    toggleRating(selected => index === selected ? -1 : index);
+                }} element={element} />
+            })}
         </div>
         <DrawerFooter updateCenter={() => {
-            updateCenter();
+            updateCenter(false);
             showAlert("Back to Center", "success");
         }} />
     </Drawer>
