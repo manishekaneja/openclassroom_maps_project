@@ -103,7 +103,7 @@ function useCustomHook() {
       setLocations(locations => locations.map(loc => (loc.index === key) ? {
         ...loc,
         ratings: [...loc.ratings, {
-          "index":loc.ratings.length,
+          "index": loc.ratings.length,
           "stars": stars,
           "comment": message
         }]
@@ -112,7 +112,7 @@ function useCustomHook() {
     markPlace(key) {
       setLocations(locations => locations.map(loc => {
         if (loc.index === key) {
-          updateCenter({ latitude: loc.latitude, longitude: loc.longitude });
+          // updateCenter({ latitude: loc.latitude, longitude: loc.longitude });
           return {
             ...loc,
             isShow: true,
@@ -186,7 +186,7 @@ Main Component to Start the App
 
 function App() {
 
-  const { updateCenter, setLocations,center, locations, menuFlag, addLocationFlag, openMenu, closeMenu, openAddScreen, closeAddScreen, addThisLocation, giveRating, markPlace, noMarker } = useCustomHook();
+  const { updateCenter, setLocations, center, locations, menuFlag, addLocationFlag, openMenu, closeMenu, openAddScreen, closeAddScreen, addThisLocation, giveRating, markPlace, noMarker } = useCustomHook();
   const { alertMessage, alertState, showAlert, hideAlert, alertType } = useAlertState();
   const [bounds, updateBounds] = useState(false);
   useEffect(() => {

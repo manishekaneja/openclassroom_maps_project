@@ -23,7 +23,7 @@ function useCurrentLocation(loaded) {
     }, [loaded]);
     return location;
 }
-function CustomMap({ setLocations,bounds, updateBounds, loaded, addLocation, homeMarker, google, newLocations, locations, updateCenter, center }) {
+function CustomMap({ setLocations, bounds, updateBounds, loaded, addLocation, homeMarker, google, newLocations, locations, updateCenter, center }) {
     let { latitude, longitude } = useCurrentLocation(loaded);
     const [fetchPlaces, updatePlaces] = useState([])
     const Base = (!!homeMarker ? homeMarker : Marker);
@@ -31,18 +31,21 @@ function CustomMap({ setLocations,bounds, updateBounds, loaded, addLocation, hom
     useEffect(function () {
         if (service) {
             service.nearbySearch({
-                location: { lat: latitude, lng: longitude },
+                location: center ? {
+                    lat: center.latitude,
+                    lng: center.longitude
+                } : { lat: latitude, lng: longitude },
                 radius: '500',
                 type: 'restaurant'
             }, function (results, status) {
                 console.log({ results, status })
                 if (status == google.maps.places.PlacesServiceStatus.OK) {
-                    formatResultArray(results)
+                    // formatResultArray(results)
                     setLocations(formatResultArray(results));
                 }
             });
         }
-    }, [latitude, longitude, service]);
+    }, [latitude, longitude, service, center]);
     return (
         <Map google={google}
             onTilesloaded={(mapProps, map) => {
