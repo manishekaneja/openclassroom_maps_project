@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { ReadStream } from 'tty';
 
 const RatingStar = styled.i`
 color: rgba(218, 165, 32,0.7);

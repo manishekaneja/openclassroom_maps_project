@@ -3,6 +3,8 @@ import RatingRow from './rating_row';
 import styled from 'styled-components';
 import { Container, Button } from '../../styled_components';
 import { AddRating } from '../../add_place';
+import CommonImageSlider, { FALLBACK_IMAGE } from '../../CommonImageSlider';
+
 const PlaceCardConatiner = styled(Container)`
     color: #333;
     background-color: #adadad;
@@ -16,9 +18,13 @@ const PlaceCardConatiner = styled(Container)`
     transition: 0.5s;
 `,
     PlaceCardImageContainer = styled(Container)`
-width:100px;
-height: 100px;
-display: inline-block;
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    align-self: center;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0px 1px 1px 0.25px;
 
 `,
     PlaceCardDetails = styled(Container)`
@@ -32,13 +38,19 @@ display: inline-block;
 export default function PlaceCard({ element, showRating, toggleRating, showAlert, addRating }) {
     const [showRatingPopup, toggleRatingPopup] = useState(false);
     return <>
+        <CommonImageSlider show={showRating} imagesArray={element && 'photo' in element ? element.photo : []} />
         <PlaceCardConatiner >
             <PlaceCardConatiner onClick={() => toggleRating()}>
                 <PlaceCardImageContainer>
-                    <img style={{ width: '100%', height: '100%' }} src="https://images.pexels.com/photos/6267/menu-restaurant-vintage-table.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt={"Default Omage"} />
+                    <img style={{ width: '100%', height: '100%' }} src={element.photo ? element.photo : FALLBACK_IMAGE} alt={"icon" + element.index} />
                 </PlaceCardImageContainer>
                 <PlaceCardDetails>
-                    <h3 style={{ fontSize: 20, margin: 0 }}>{element.name}</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                        <h3 style={{ fontSize: 20, margin: 0 }}>{element.name} </h3>
+                        <span style={{ color: 'red', fontSize: 16, fontWeight: '900', textShadow: '0px 0px 2px yellow' }}>
+                            {element.averageRating}
+                        </span>
+                    </div>
                     <div>
                         <p style={{ margin: 2, fontSize: 14 }}> Address: </p>
                         <p style={{ margin: 2, fontSize: 14 }}>{element.address}</p>

@@ -13,7 +13,7 @@ export function CustomMarker(props) {
         icon: !!props.icon ? ((!!props.icon.url) ? {
             url: props.icon.url,
             ...(props.icon ? { scaledSize: new props.google.maps.Size(props.icon.dim[0], props.icon.dim[1]) } : {})
-        } : props.icon ): null,
+        } : props.icon) : null,
         ...(initallLoad ? { animation: props.google.maps.Animation.DROP } : {})
     };
     useEffect(() => {
@@ -23,14 +23,9 @@ export function CustomMarker(props) {
     }, [initallLoad]);
     useEffect(function () {
         marker.current = new props.google.maps.Marker(preferences);
-        marker.current.addListener('click', function () {
-            if (marker.current.getAnimation() !== null) {
-                marker.current.setAnimation(null);
-            } else {
-                marker.current.setAnimation(props.google.maps.Animation.BOUNCE);
-                setTimeout(_ => marker.current.setAnimation(null), 1500)
-            }
-        });
+        // marker.current.addListener('click', function () {
+
+        // });
         return function () {
             marker.current.setMap(null);
         }
