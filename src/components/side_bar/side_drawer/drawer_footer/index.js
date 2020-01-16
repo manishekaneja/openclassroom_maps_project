@@ -20,7 +20,7 @@ export function DrawerFooter({updateCenter}) {
         display: 'flex', alignItems: "center"
     }} >
         <Button style={{ fontSize: 24 }} onClick={()=>{
-            updateCenter()
+            updateCenter(false);
         }} > Home</Button>
         {/* <label style={{ display: 'flex', justifyContent: "space-around", alignItems: "center", width: 200 }}>
             <span>Dark Mode</span>

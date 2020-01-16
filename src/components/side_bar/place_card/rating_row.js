@@ -13,16 +13,24 @@ color: gold;
 `
 export { ActiveRatingStar, RatingStar };
 
-export default function RatingRow({ rate }) {
-    return <>
-        <div style={{
-            borderBottom: '1px solid rgba(51, 51, 51,0.5)', padding: 10
-        }}>
-            <div>
-                {Array(Number(rate.stars)).fill(1).map((_, index) => <ActiveRatingStar key={index} className="fas fa-star active_star" />)}
-                {Array(5 - Number(rate.stars)).fill(1).map((_, index) => <RatingStar key={index} className="fas fa-star star" />)}
+export default class RatingRow extends React.Component {
+
+    render() {
+        const rate = this.props.rate;
+        return <>
+            <div style={{
+                display: 'flex', justifyContent: 'center',alignItems:'center',
+                borderBottom: '1px solid rgba(51, 51, 51,0.5)', padding: 10
+            }}><div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 14 }}>{rate.comment}</p>
+                </div>
+                <div style={{ height: 50, width: 50, display: 'flex', justifyContent: 'center',alignItems:'center' }} >
+                    <p style={{ fontSize: 24 }}>
+                        <span style={{ color: 'red', fontWeight: '900', textShadow: '0px 0px 2px yellow' }}>
+                            {rate.stars}
+                        </span> </p>
+                </div>
             </div>
-            <p style={{ fontSize: 14 }}>{rate.comment}</p>
-        </div>
-    </>
+        </>
+    }
 }

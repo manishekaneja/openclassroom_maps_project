@@ -17,6 +17,11 @@ const FixedLayer = styled.div`
     transition: 0.5s;
 `;
 
+
+
+/*
+Custom Hook
+*/
 function useReviewDetails(show) {
     let [comment, updateComment] = useState('');
     let [count, updateCount] = useState(0);
@@ -26,12 +31,14 @@ function useReviewDetails(show) {
     return { comment, updateComment, count, updateCount };
 }
 
+// Custom Hook
 function useDetails() {
     let [nameOfPlace, updatePlaceName] = useState('');
     let [addressOfPlace, updatePlaceAddress] = useState('');
     return { nameOfPlace, addressOfPlace, updatePlaceAddress, updatePlaceName };
 }
 
+//Add Rating Popup
 export function AddRating({ show, onAddClick, onCloseClick }) {
     let { comment, updateComment, count, updateCount } = useReviewDetails(show);
     return <FixedLayer style={{ width: show ? '100vw' : 0 }}>
@@ -58,6 +65,7 @@ export function AddRating({ show, onAddClick, onCloseClick }) {
     </FixedLayer >
 }
 
+//Add Place Popup
 export function AddPlace({ show, onAddClick, onCloseClick }) {
     let { nameOfPlace, addressOfPlace, updatePlaceAddress, updatePlaceName } = useDetails();
     return <FixedLayer style={{ width: show ? '100vw' : 0 }}>
@@ -80,7 +88,7 @@ export function AddPlace({ show, onAddClick, onCloseClick }) {
     </FixedLayer >
 }
 
-
+//Styles OBJECT
 const styles = {
     innerBoxStyles: {
         width: 320,

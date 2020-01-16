@@ -1,15 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 import CustomMap, { HomeMarker } from './components/map';
-import SideBarButton from './components/side_bar/side_bar_button';
 import { SideDrawer } from './components/side_bar/side_drawer';
-import data from './api/ajax_request';
 
 import { FlexCenter, AlertMessage } from './components/styled_components';
 import { AddPlace } from './components/add_place';
-function useCustomHook() {
-  const [locations, setLocations] = useState([...data.default.data]);
+
+// import * as data from './data/res.json'
+/*
+Utility Function to restructure Array
+*/
+
+// const imageArray = [
+//   'https://images.unsplash.com/photo-1533467915241-eac02e856653?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80',
+//   'https://images.pexels.com/photos/60597/dahlia-red-blossom-bloom-60597.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'
+// ]
+
+
+export function formatResultArray(result_array) {
+
+  return result_array.map((element, index) => {
+    if ('photos' in element) {
+      element.photos.forEach(e => { console.log(e.getUrl()) });
+      fetch('')
+    }
+    return {
+      index: index,
+      name: element.name,
+      address: element.vicinity,
+      ratings: [{
+        index: 1,
+        comment: "People rated this place as",
+        stars: element.rating ? element.rating > 5 ? 5 : Math.round(element.rating) : 0
+      }],
+      averageRating: element.rating ? element.rating > 5 ? 5 : Math.round(element.rating) : 0,
+      latitude: element.geometry.location.lat(),
+      longitude: element.geometry.location.lng(),
+      isShow: false,
+      isNew: false,
+      // photo: imageArray
+      photo: 'photos' in element && element.photos.length > 0 ? element.photos.map(e => e.getUrl()) : null
+    }
+  });
+}
+
+
+/*
+Custom Hook to track locations
+*/
+
+
+
+
+function useCustomHookToManageLocations() {
+  const [locations, setLocations] = useState([...formatResultArray([])]);
   const [menuFlag, updateMenuFlag] = useState(false);
   const [addLocationFlag, updateAddLocationFlag] = useState(false);
   const [tempLocation, updateTempLocation] = useState(null);
@@ -20,6 +65,7 @@ function useCustomHook() {
     menuFlag,
     addLocationFlag,
     center,
+    setLocations,
     openMenu() {
       updateMenuFlag(true);
       updateAddLocationFlag(false);
@@ -34,7 +80,7 @@ function useCustomHook() {
     },
     closeAddScreen() {
       updateAddLocationFlag(false);
-      updateCenter(false);
+      // updateCenter(false);
       updateTempLocation({});
     },
     openAddScreen(tempObj) {
@@ -44,6 +90,11 @@ function useCustomHook() {
       }).length > 0) {
         return false;
       }
+      // updateCenter(false);
+      // setLocations(locations => locations.map(loc => ({
+      //   ...loc,
+      //   isShow: false
+      // })));
       updateTempLocation(tempObj);
       updateAddLocationFlag(true);
       updateMenuFlag(false);
@@ -52,7 +103,7 @@ function useCustomHook() {
       setLocations(loc => {
         const newLocation = {
           ...tempLocation,
-          restaurantName: name, address,
+          name: name, address,
           index: loc.length,
           ratings: [],
           isShow: false,
@@ -67,18 +118,35 @@ function useCustomHook() {
       updateAddLocationFlag(false);
     },
     giveRating(message, stars, key) {
-      setLocations(locations => locations.map(loc => (loc.index === key) ? {
-        ...loc,
-        ratings: [...loc.ratings, {
-          "stars": stars,
-          "comment": message
-        }]
-      } : loc))
+      setLocations(locations => locations.map(loc => {
+
+        console.log(
+          loc.ratings.length > 1 ?
+            loc.ratings.reduce((ele, avg) => ({
+              ...ele, stars: parseInt(ele.stars) + (parseInt(avg.stars) / loc.ratings.length)
+            })).stars : (loc.ratings.length === 1 ? loc.ratings[0].stars : 0))
+        return (loc.index === key) ? {
+          ...loc,
+          averageRating: loc.ratings.length > 0 ?
+            Math.floor([...loc.ratings, {
+              "index": loc.ratings.length,
+              "stars": stars,
+              "comment": message
+            }].reduce((ele, avg) => ({
+              ...ele, stars: parseInt(ele.stars) + (parseInt(avg.stars))
+            })).stars / (loc.ratings.length + 1)) : stars,
+          ratings: [...loc.ratings, {
+            "index": loc.ratings.length,
+            "stars": stars,
+            "comment": message
+          }]
+        } : loc;
+      }))
     },
     markPlace(key) {
       setLocations(locations => locations.map(loc => {
         if (loc.index === key) {
-          updateCenter({ latitude: loc.latitude, longitude: loc.longitude });
+          // updateCenter({ latitude: loc.latitude, longitude: loc.longitude });
           return {
             ...loc,
             isShow: true,
@@ -98,6 +166,9 @@ function useCustomHook() {
   };
 }
 
+/*
+Custom Hook for Showing Alert
+*/
 
 function useAlertState() {
   const [alertState, updateAlertValue] = useState(false);
@@ -137,35 +208,53 @@ function useAlertState() {
 }
 
 
+
+function getFilteredLocation(locationsArray, bounds) {
+  return [...locationsArray].filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
+    bounds.getSouthWest().lat() >= e.latitude ||
+    bounds.getNorthEast().lng() <= e.longitude ||
+    bounds.getSouthWest().lng() >= e.longitude)))
+}
+/*
+
+Main Component to Start the App
+
+
+
+*/
+
+
+
+
 function App() {
 
-  const { updateCenter, center, locations, menuFlag, addLocationFlag, openMenu, closeMenu, openAddScreen, closeAddScreen, addThisLocation, giveRating, markPlace, noMarker } = useCustomHook();
+  const { updateCenter, setLocations, center, locations, addLocationFlag, openAddScreen, closeAddScreen, addThisLocation, giveRating } = useCustomHookToManageLocations();
   const { alertMessage, alertState, showAlert, hideAlert, alertType } = useAlertState();
-  useEffect(() => {
-    showAlert("Ready To Start", "success");
-  }, [])
-
+  const [bounds, updateBounds] = useState(false);
   return (<>
-    <SideBarButton openMenu={openMenu} />
     <FlexCenter style={{ justifyContent: 'flex-start', alignItems: 'flex-start', flex: 1, overflow: 'hidden', width: '100%' }}>
       <SideDrawer
         showAlert={showAlert}
-        hideAlert={hideAlert}
-        noMarker={noMarker}
+        addLocationFlag={addLocationFlag}
         updateCenter={updateCenter}
-        locations={locations}
-        markPlace={markPlace}
-        show={menuFlag}
-        closeMenu={closeMenu}
+        locations={[...locations].filter(e => (!!bounds && !(bounds.getNorthEast().lat() <= e.latitude ||
+          bounds.getSouthWest().lat() >= e.latitude ||
+          bounds.getNorthEast().lng() <= e.longitude ||
+          bounds.getSouthWest().lng() >= e.longitude)))}
         addRating={giveRating}
       />
-      <CustomMap
-        center={center}
-        updateCenter={updateCenter}
-        homeMarker={HomeMarker}
-        newLocations={locations.filter((loc) => !loc.isShow && loc.isNew)}
-        locations={locations.filter((loc) => loc.isShow)}
-        addLocation={openAddScreen} />
+      <div style={{ display: 'flex', flex: 1, position: 'relative', overflow: 'hidden', alignSelf: 'stretch' }}>
+        <CustomMap
+          center={center}
+          setLocations={setLocations}
+          updateCenter={updateCenter}
+          homeMarker={HomeMarker}
+          newLocations={getFilteredLocation(locations, bounds)}
+          locations={getFilteredLocation(locations, bounds)}
+          bounds={bounds}
+          updateBounds={updateBounds}
+          addLocation={openAddScreen} />
+      </div>
     </FlexCenter>
     <AlertMessage open={alertState} type={alertType} >
       <span onClick={hideAlert}>
@@ -175,6 +264,8 @@ function App() {
     <AddPlace show={addLocationFlag} onAddClick={(name, address) => {
       addThisLocation(name, address);
       showAlert("Found New Place \"" + name + "\"", "success");
-    }} onCloseClick={closeAddScreen} />  </>);
+    }} onCloseClick={closeAddScreen} />
+    {/* <CommonImageSlider show={showSlider} imagesArray={selectedOutlet && 'photo' in selectedOutlet ? selectedOutlet.photo : []} /> */}
+  </>);
 }
 export default App;
